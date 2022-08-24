@@ -4,43 +4,61 @@ const users = `
     SELECT
         u.id, u.name,
         json_agg(
-            json_build_object(
-                'id', p.id,
-                'title', p.title,
-                'body', p.body,
-                'created_at', p.created_at
-            )
+            CASE 
+            WHEN 
+                p.id IS NOT NULL 
+            THEN 
+                json_build_object(
+                    'id', p.id,
+                    'title', p.title,
+                    'body', p.body,
+                    'created_at', p.created_at
+                )
+            ELSE
+                json_build_object(
+                    'message', 'no post yet'
+                )
+            END
         ) AS posts
-    FROM 
-        users u
-    INNER JOIN
-        posts p
+    FROM
+    users u
+    LEFT JOIN
+    posts p
     ON
-        u.id = p.user_id
+    u.id = p.user_id
     GROUP BY
-     u.id
+    u.id
 `
 
 const user =  `
     SELECT
-    u.id, u.name,
-    json_agg(
-        json_build_object(
-            'id', p.id,
-            'name', p.name,
-            'email', p.email,
-            'created_at', p.created_at
-            )
+        u.id, u.name,
+        json_agg(
+            CASE 
+            WHEN 
+                p.id IS NOT NULL 
+            THEN 
+                json_build_object(
+                    'id', p.id,
+                    'title', p.title,
+                    'body', p.body,
+                    'created_at', p.created_at
+                )
+            ELSE
+                json_build_object(
+                    'message', 'no post yet'
+                )
+            END
         ) AS posts
-    FROM 
-        users u WHERE id = $1
-    JOIN
+    FROM
+        (SELECT * FROM users WHERE id = $1) AS u
+    LEFT JOIN
         posts p
     ON
         u.id = p.user_id
     GROUP BY
-        u.id
-
+        u.id,
+        u.name
 `
 const NEW_USER = `
     INSERT 

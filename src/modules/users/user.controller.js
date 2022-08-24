@@ -1,9 +1,19 @@
 const model = require('./user.model')
+const moment = require('moment')
+
+moment.locale('uz-latn')
 
 module.exports = {
     GET: async(req, res) => {
         try {
             const users = await model.allUser()
+
+            users.map(el => {
+                el.posts[0].id ? el.posts.map(p => {
+                    p.created_at = moment(p.created_at).format('LLLL')
+                }) : null
+            })
+
             return res.json(users)
         } catch (err) {
             console.log(err);
@@ -14,6 +24,11 @@ module.exports = {
         try {
             const { id } = req.params;
             const user = await model.anUser(id)
+
+            user.posts?.map(el => {
+                el.id ? el.created_at = moment(el.created_at).format('LLLL') : null
+            })
+
             return res.json(user)
         } catch (err) {
             console.log(err);
