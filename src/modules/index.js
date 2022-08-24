@@ -2,6 +2,7 @@ const express = require('express')
 const postController = require('./posts/post.controller')
 const userController = require('./users/user.controller')
 const router = express.Router()
+const jwtVerify = require('../middlewares/jwt.verify')
 
 router
     // users
@@ -12,10 +13,10 @@ router
     .delete('/users/:id', userController.DELETE)
     
     // posts
-    .get('/posts', postController.GET)
-    .get('/posts/:id', postController.GET_POST)
-    .post('/posts', postController.POST)
-    .put('/posts/:id', postController.PUT)
-    .delete('/posts/:id', postController.DELETE)
+    .get('/posts', jwtVerify, postController.GET)
+    .get('/posts/:id', jwtVerify, postController.GET_POST)
+    .post('/posts', jwtVerify, postController.POST)
+    .put('/posts/:id', jwtVerify, postController.PUT)
+    .delete('/posts/:id', jwtVerify, postController.DELETE)
 
 module.exports = router

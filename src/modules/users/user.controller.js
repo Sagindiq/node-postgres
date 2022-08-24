@@ -1,4 +1,5 @@
 const model = require('./user.model')
+const sign = require('../../utils/JWT')
 const moment = require('moment')
 
 moment.locale('uz-latn')
@@ -41,6 +42,7 @@ module.exports = {
             const user = await model.addUser(name, gender, email, password)
             return res.json({
                 message: 'You have been registered',
+                access_token: sign({id: user.id}),
                 data: user
             })
         } catch (err) {
